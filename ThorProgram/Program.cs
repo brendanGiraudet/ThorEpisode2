@@ -135,7 +135,29 @@ public class Position
     {
         return $"X : {X}, Y : {Y}, Content : {Content}";
     }
+
+    public override bool Equals(Object obj)
+    {
+        if ((obj == null) || this.GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        var otherPosition = obj as Position;
+        return Equals(otherPosition);
+    }
+
+    private bool Equals(Position other)
+    {
+        return X == other.X && Y == other.Y;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y);
+    }
 }
+
 public enum ContentPosition
 {
     Empty = 0,
