@@ -8,53 +8,64 @@ using System.Linq;
  **/
 class Player
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         const int height = 18;
         const int weight = 40;
         var game = new Game(height, weight);
         game.InitTheMap();
 
-        var inputs = Console.ReadLine().Split(' ');
-        int thorPositionByX = int.Parse(inputs[0]);
-        int thorPositionByY = int.Parse(inputs[1]);
-        game.SetContentPosition(thorPositionByX, thorPositionByY, ContentPosition.Thor);
+        var inputs = Console.ReadLine()?.Split(' ');
+        if (inputs != null)
+        {
+            var thorPositionByX = int.Parse(inputs[0]);
+            var thorPositionByY = int.Parse(inputs[1]);
+            game.SetContentPosition(thorPositionByX, thorPositionByY, ContentPosition.Thor);
+        }
 
         // game loop
         while (true)
         {
-            inputs = Console.ReadLine().Split(' ');
-            int H = int.Parse(inputs[0]); // the remaining number of hammer strikes.
-            int N = int.Parse(inputs[1]); // the number of giants which are still present on the map.
-            for (int i = 0; i < N; i++)
+            inputs = Console.ReadLine()?.Split(' ');
+            if (inputs != null)
             {
-                inputs = Console.ReadLine().Split(' ');
-                int giantPositionByX = int.Parse(inputs[0]);
-                int giantPositionByY = int.Parse(inputs[1]);
-                game.SetContentPosition(giantPositionByX, giantPositionByY, ContentPosition.Giant);
+                var h = int.Parse(inputs[0]); // the remaining number of hammer strikes.
+                var n = int.Parse(inputs[1]); // the number of giants which are still present on the map.
+                for (var i = 0; i < n; i++)
+                {
+                    inputs = Console.ReadLine()?.Split(' ');
+                    if (inputs == null) continue;
+                    var giantPositionByX = int.Parse(inputs[0]);
+                    var giantPositionByY = int.Parse(inputs[1]);
+                    game.SetContentPosition(giantPositionByX, giantPositionByY, ContentPosition.Giant);
+                }
             }
+
             game.DisplayMap();
-            // The movement or action to be carried out: WAIT STRIKE N NE E SE S SW W or N
             Console.WriteLine("WAIT");
         }
     }
 }
+
 public class Game
 {
-    public List<Position> Map { get; set; }
-    public int HeightMap { get; set; }
-    public int WeightMap { get; set; }
+    public List<Position> Map { get; private set; }
+    private readonly int _heightMap;
+    private readonly int _weightMap;
+
     public Game(int height, int weight)
     {
-        HeightMap = height;
-        WeightMap = weight;
+        _heightMap = height;
+        _weightMap = weight;
+        InitTheMap();
     }
-    public void InitTheMap()
+
+    private void InitTheMap()
     {
         Map = new List<Position>();
-        for (int i = 0; i < HeightMap; i++)
+        for (var i = 0; i < _heightMap; i++)
         {
-            for (int j = 0; j < WeightMap; j++)
+            for (var j = 0; j < _weightMap; j++)
             {
                 Map.Add(new Position
                 {
@@ -64,10 +75,11 @@ public class Game
             }
         }
     }
+
     public void SetContentPosition(int x, int y, ContentPosition content)
     {
         var position = Map.Find(location => location.X.Equals(x) && location.Y.Equals(y));
-        position.Content = ContentPosition.Thor;
+        position.Content = content;
     }
 
     public void MoveThorTo(Direction direction)
@@ -101,16 +113,13 @@ public class Game
 
     public void DisplayMap()
     {
-        for (int i = 0; i < HeightMap; i++)
+        for (var i = 0; i < _heightMap; i++)
         {
             var row = Map.Where(position => position.Equals(i)).OrderBy(p => p.X).ToList();
-            row.ForEach(position => {
-                System.Console.WriteLine(position);
-            });
-            System.Console.WriteLine("\n");
+            row.ForEach(Console.WriteLine);
+            Console.WriteLine("\n");
         }
     }
-}
 
 public enum Direction
 {
@@ -124,12 +133,12 @@ public enum Direction
     NorthWest = 7
 }
 
-public class Position
+public class Position 
 {
     public int X { get; set; }
-    public int Y { get; set; }  
+    public int Y { get; set; }
 
-    public ContentPosition Content { get; set; }  
+    public ContentPosition Content { get; set; }
 
     public override string ToString()
     {
