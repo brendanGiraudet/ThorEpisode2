@@ -112,16 +112,10 @@ public class Game
         }
     }
 
-public enum Direction
-{
-    North = 0,
-    NorthEst = 1,
-    East = 2,
-    SouthEast = 3,
-    South = 4,
-    SouthWest = 5,
-    West = 6, 
-    NorthWest = 7
+    public Position FindTheNearestGiant()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class Position 
