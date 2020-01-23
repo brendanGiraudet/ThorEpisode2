@@ -81,34 +81,26 @@ public class Game
         position.Content = content;
     }
 
-    public void MoveThorTo(Direction direction)
+    public void MoveThorTo(Position giantPosition)
     {
         var currentThorPosition = Map.Find(position => position.Content.Equals(ContentPosition.Thor));
-        var expectedThorPosition = currentThorPosition;
-        
-        switch (direction)
-        {
-            case Direction.North:
-                if(currentThorPosition.Y > 1)
-                    expectedThorPosition.Y--;
-            break;
-            case Direction.NorthEst:
-                if(currentThorPosition.Y > 1 && currentThorPosition.X < WeightMap - 1)
-                    expectedThorPosition.Y--;
-                    expectedThorPosition.X++;
-            break;
-            case Direction.East:
-                if( currentThorPosition.X < WeightMap - 1)
-                    expectedThorPosition.X++;
-            break;
-            default:
-            System.Console.WriteLine("Error : no destination found");
-                return;
-        }
+        var positionByX = currentThorPosition.X;
+        var positionByY = currentThorPosition.Y;
 
+        if (giantPosition.X < currentThorPosition.X)
+            positionByX--;
+        if (giantPosition.X > currentThorPosition.X)
+            positionByX++;
+        if (giantPosition.Y < currentThorPosition.Y)
+            positionByY--;
+        if (giantPosition.Y > currentThorPosition.Y)
+            positionByY++;
+
+        var expectedPosition = Map.Find(position => position.X.Equals(positionByX)
+                                                    && position.Y.Equals(positionByY));
+        expectedPosition.Content = ContentPosition.Thor;
         currentThorPosition.Content = ContentPosition.Empty;
-        expectedThorPosition.Content = ContentPosition.Thor;
-    }    
+    }
 
     public void DisplayMap()
     {
