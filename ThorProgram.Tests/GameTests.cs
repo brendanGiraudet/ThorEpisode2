@@ -1,7 +1,7 @@
 using NFluent;
 using NUnit.Framework;
 
-namespace Tests
+namespace ThorProgram.Tests
 {
     public class GameTests
     {
