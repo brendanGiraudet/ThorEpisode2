@@ -13,7 +13,6 @@ class Player
         const int height = 18;
         const int weight = 40;
         var game = new Game(height, weight);
-        game.InitTheMap();
 
         var inputs = Console.ReadLine()?.Split(' ');
         if (inputs != null)
