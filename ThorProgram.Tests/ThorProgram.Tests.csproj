@@ -1,15 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="nunit" Version="3.10.1"/>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0"/>
-    <PackageReference Include="NFluent" Version="2.6.0"/>
+    <PackageReference Include="nunit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="NFluent" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ThorProgram\ThorProgram.csproj"/>
+    <ProjectReference Include="..\ThorProgram\ThorProgram.csproj" />
+    <Content Include="GameTests.cs" />
+    <Content Include="PlayerTests.cs" />
   </ItemGroup>
 </Project>
