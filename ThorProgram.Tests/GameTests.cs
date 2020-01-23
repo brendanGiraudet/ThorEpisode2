@@ -16,20 +16,31 @@ namespace ThorProgram.Tests
         }
 
         [Test]
-        public void shouldThorIntheMap()
+        public void ShouldFindTheNearestGiant()
         {
             // Arrange
             const int thorPositionByX = 3;
             const int thorPositionByY = 3;
-
-
-            // Act
+            const int giantPositionByX = 4;
+            const int giantPositionByY = 4;
+            const int otherGiantPositionByX = 8;
+            const int otherGiantPositionByY = 8;
             _game.SetContentPosition(thorPositionByX, thorPositionByY, ContentPosition.Thor);
-            var thorPosition = _game.Map.Find(location => location.Content == ContentPosition.Thor);
+            _game.SetContentPosition(giantPositionByX, giantPositionByY, ContentPosition.Giant);
+            _game.SetContentPosition(otherGiantPositionByX, otherGiantPositionByY, ContentPosition.Giant);
+            var expectedGiantPosition = new Position
+            {
+                X = giantPositionByX,
+                Y = giantPositionByY
+            };
+            
+            // Act
+            var giantPosition = _game.FindTheNearestGiant();
 
             // Assert
-            Check.That(thorPosition).IsNotNull();
+            Check.That(giantPosition).IsEqualTo(expectedGiantPosition);
         }
+        
         [Test]
         public void ShouldMoveThorToGiant()
         {
