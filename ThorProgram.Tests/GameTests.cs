@@ -6,24 +6,15 @@ namespace ThorProgram.Tests
     public class GameTests
     {
         private Game _game;
-        const int _heightMap = 18;
-        const int _weightMap = 40;
+        private const int HeightMap = 18;
+        private const int WeightMap = 40;
 
         [SetUp]
         public void Setup()
         {
-            _game = new Game();
-            _game.InitTheMap(_heightMap, _weightMap);
+            _game = new Game(HeightMap , WeightMap);
         }
-        [Test]
-        public void ShouldInitiateTheMapWithPosition()
-        {
-            // Act
-            _game.InitTheMap(_heightMap,_weightMap);
 
-            // Assert
-            Check.That(_game.Map).IsNotNull();
-        }
         [Test]
         public void shouldThorIntheMap()
         {
