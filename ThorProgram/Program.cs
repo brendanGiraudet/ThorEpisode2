@@ -12,6 +12,9 @@ namespace ThorProgram
     {
         private static void Main(string[] args)
         {
+            const string strike = "STRIKE";
+            const string wait = "WAIT";
+            
             const int height = 18;
             const int weight = 40;
             var game = new Game(height, weight);
@@ -44,13 +47,21 @@ namespace ThorProgram
 
                 game.DisplayMap();
                 var giant = game.FindTheNearestGiant();
-                if(giant == null)
-                    Console.WriteLine("WAIT");
-                else
+                if (giant == null)
                 {
-                    var direction = game.GetDirectionWhereThorMoveTo(giant);
-                    Console.WriteLine(direction);
+                    Console.WriteLine(wait);
+                    return;
                 }
+
+                if (game.IsNearByThor(giant))
+                {
+                    Console.WriteLine(strike);
+                    return;
+                }
+
+                var direction = game.GetDirectionWhereThorMoveTo(giant);
+                    Console.WriteLine(direction);
+                
             }
         }
     }
@@ -144,8 +155,8 @@ namespace ThorProgram
             for (var i = 0; i < _heightMap; i++)
             {
                 var row = Map.Where(position => position.Y.Equals(i)).OrderBy(p => p.X).ToList();
-                row.ForEach(Console.WriteLine);
-                Console.WriteLine("\n");
+                row.ForEach(Console.Error.WriteLine);
+                Console.Error.WriteLine("\n");
             }
         }
 
@@ -159,17 +170,38 @@ namespace ThorProgram
                 return null;
             }
             var currentThorPosition = CurrentThorPosition();
-            var positionDifferenceList = giants.Select
-            ( position => new 
+            var giantPositionDifferenceList = giants.Select
+            ( expectedPosition => new 
                 {
-                    Position = position,
-                    Diff = Math.Abs(position.X - currentThorPosition.X) + 
-                           Math.Abs(position.Y - currentThorPosition.Y)
+                    Position = expectedPosition,
+                    Diff = GetNumberOfMovementToReachPosition(currentThorPosition,expectedPosition)
                 }
             );
-            positionDifferenceList = positionDifferenceList.OrderBy(
+            giantPositionDifferenceList = giantPositionDifferenceList.OrderBy(
                 p => p.Diff);
-            return positionDifferenceList.FirstOrDefault()? .Position;
+            return giantPositionDifferenceList.FirstOrDefault()? .Position;
+        }
+
+        private static int GetNumberOfMovementToReachPosition(Position currentPosition, Position expectedPosition)
+        {
+            return Math.Abs(expectedPosition.X - currentPosition.X) + 
+                   Math.Abs(expectedPosition.Y - currentPosition.Y);
+        }
+
+        public bool IsNearByThor(Position giantPosition)
+        {
+            var currentThorPosition = CurrentThorPosition();
+            if (GetNumberOfMovementToReachPosition(currentThorPosition, giantPosition).Equals(1))
+                return true;
+            
+            return IsInDiagonalPosition(currentThorPosition, giantPosition);
+        }
+
+        private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition)
+        {
+            var numberOfMovementByX = Math.Abs(currentPosition.X - expectedPosition.X);
+            var numberOfMovementByY = Math.Abs(currentPosition.Y - expectedPosition.Y);
+            return numberOfMovementByX.Equals(1) && numberOfMovementByY.Equals(1);
         }
     }
 
@@ -199,11 +231,6 @@ namespace ThorProgram
         private bool Equals(Position other)
         {
             return X == other.X && Y == other.Y;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(X, Y);
         }
     }
 

@@ -16,6 +16,35 @@ namespace ThorProgram.Tests
         }
 
         [Test]
+        [TestCase(3,2)]
+        [TestCase(4,2)]
+        [TestCase(4,3)]
+        [TestCase(4,4)]
+        [TestCase(3,4)]
+        [TestCase(2,4)]
+        [TestCase(2,3)]
+        [TestCase(2,2)]
+        public void ShouldTrueWhenUseIsNearByThorMethod(int giantPositionByX,int giantPositionByY)
+        {
+            // Arrange
+            const int thorPositionByX = 3;
+            const int thorPositionByY = 3;
+            _game.SetContentPosition(thorPositionByX, thorPositionByY, ContentPosition.Thor);
+            _game.SetContentPosition(giantPositionByX, giantPositionByY, ContentPosition.Giant);
+            var expectedGiantPosition = new Position
+            {
+                X = giantPositionByX,
+                Y = giantPositionByY
+            };
+            
+            // Act
+            var isNearByThor = _game.IsNearByThor(expectedGiantPosition);
+
+            // Assert
+            Check.That(isNearByThor).IsTrue();
+        }
+
+        [Test]
         public void ShouldFindTheNearestGiant()
         {
             // Arrange
