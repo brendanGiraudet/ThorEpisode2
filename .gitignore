@@ -10,3 +10,7 @@ ThorProgram.Tests/obj/
 ThorProgram/obj/Debug/netcoreapp2.1/
 
 ThorProgram/obj/
+
+ThorProgram.Tests/bin/Debug/netcoreapp2.1/
+
+ThorProgram/bin/Debug/netcoreapp2.1/

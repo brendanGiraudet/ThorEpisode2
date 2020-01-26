@@ -59,7 +59,7 @@ namespace ThorProgram.Tests
             };
  
             // Act
-            _game.MoveThorTo(giantPosition);
+            var _ = _game.GetDirectionWhereThorMoveTo(giantPosition);
             var thorPosition = _game.Map.Find(location => location.Content.Equals(ContentPosition.Thor));
 
             // Assert
