@@ -14,56 +14,35 @@ namespace ThorProgram
         {
             const string strike = "STRIKE";
             const string wait = "WAIT";
-            
+
             const int height = 18;
             const int weight = 40;
             var game = new Game(height, weight);
-
-            var inputs = Console.ReadLine()?.Split(' ');
-            if (inputs != null)
-            {
-                var thorPositionByX = int.Parse(inputs[0]);
-                var thorPositionByY = int.Parse(inputs[1]);
-                game.SetContentPosition(thorPositionByX, thorPositionByY, ContentPosition.Thor);
-            }
+            var thorPosition = game.GetThorPosition();
 
             // game loop
             while (true)
             {
-                inputs = Console.ReadLine()?.Split(' ');
-                if (inputs != null)
-                {
-                    var h = int.Parse(inputs[0]); // the remaining number of hammer strikes.
-                    var n = int.Parse(inputs[1]); // the number of giants which are still present on the map.
-                    for (var i = 0; i < n; i++)
-                    {
-                        inputs = Console.ReadLine()?.Split(' ');
-                        if (inputs == null) continue;
-                        var giantPositionByX = int.Parse(inputs[0]);
-                        var giantPositionByY = int.Parse(inputs[1]);
-                        game.SetContentPosition(giantPositionByX, giantPositionByY, ContentPosition.Giant);
-                    }
-                }
+                var giants = game.GetGiantPositions();
+                giants.ForEach(Console.Error.WriteLine);
 
-                game.DisplayMap();
-                var giant = game.FindTheNearestGiant();
-                Console.Error.WriteLine(giant);
+                var giant = game.FindTheNearestPosition(thorPosition, giants);
                 if (giant == null)
                 {
                     Console.WriteLine(wait);
                     return;
                 }
 
-                if (game.IsNearByThor(giant))
+                Console.Error.WriteLine(thorPosition);
+                if (game.IsBeside(thorPosition, giant))
                 {
                     Console.WriteLine(strike);
                     giant.Content = ContentPosition.Empty;
                     return;
                 }
 
-                var direction = game.GetDirectionWhereThorMoveTo(giant);
-                    Console.WriteLine(direction);
-                
+                var direction = game.GetDirectionWhereMoveTo(thorPosition,giant);
+                Console.WriteLine(direction);
             }
         }
     }
@@ -103,40 +82,35 @@ namespace ThorProgram
             position.Content = content;
         }
 
-        public string GetDirectionWhereThorMoveTo(Position giantPosition)
+        public string GetDirectionWhereMoveTo(Position currentPosition, Position targetPosition)
         {
             var direction = "";
-            var currentThorPosition = CurrentThorPosition();
-            var positionByX = currentThorPosition.X;
-            var positionByY = currentThorPosition.Y;
+            var currentPositionByX = currentPosition.X;
+            var currentPositionByY = currentPosition.Y;
+            var targetPositionByX = targetPosition.X;
+            var targetPositionByY = targetPosition.Y;
 
-            if (giantPosition.Y < currentThorPosition.Y)
+            if (targetPositionByY < currentPositionByY)
             {
-                positionByY--;
+                currentPosition.Y--;
                 direction = "N";
             }
-
-            if (giantPosition.Y > currentThorPosition.Y)
+            if (targetPositionByY > currentPositionByY)
             {
-                positionByY++;
+                currentPosition.Y++;
                 direction = "S";
             }
-
-            if (giantPosition.X < currentThorPosition.X)
+            if (targetPositionByX < currentPositionByX)
             {
-                positionByX--;
+                currentPosition.X--;
                 direction += "W";
             }
 
-            if (giantPosition.X > currentThorPosition.X)
+            if (targetPositionByX > currentPositionByX)
             {
-                positionByX++;
+                currentPosition.X++;
                 direction += "E";
             }
-
-            var expectedPosition = GetPosition(positionByX, positionByY);
-            expectedPosition.Content = ContentPosition.Thor;
-            currentThorPosition.Content = ContentPosition.Empty;
 
             return direction;
         }
@@ -147,65 +121,84 @@ namespace ThorProgram
                                         && position.Y.Equals(positionByY));
         }
 
-        private Position CurrentThorPosition()
+        public Position CurrentThorPosition()
         {
             return Map.Find(position => position.Content.Equals(ContentPosition.Thor));
         }
 
         public void DisplayMap()
         {
-            Map.ForEach(position =>
-            {
-                Console.Error.WriteLine(position);
-            });
+            Map.ForEach(position => { Console.Error.WriteLine(position); });
         }
 
-        public Position FindTheNearestGiant()
+        public Position FindTheNearestPosition(Position currentPosition, List<Position> positions)
         {
-            var giants = Map.Where(
-                position => position.Content.Equals(ContentPosition.Giant)
-            ).ToList();
-            if (!giants.Any())
-            {
-                return null;
-            }
-            var currentThorPosition = CurrentThorPosition();
-            var giantPositionDifferenceList = giants.Select
-            ( expectedPosition => new 
+            var positionDifferenceList = positions.Select
+            (expectedPosition => new
                 {
                     Position = expectedPosition,
-                    Diff = GetNumberOfMovementToReachPosition(currentThorPosition,expectedPosition)
+                    Diff = GetNumberOfMovementToReachPosition(currentPosition, expectedPosition)
                 }
             );
-            giantPositionDifferenceList = giantPositionDifferenceList.OrderBy(
+            positionDifferenceList = positionDifferenceList.OrderBy(
                 p => p.Diff);
-            return giantPositionDifferenceList.FirstOrDefault()? .Position;
+            return positionDifferenceList.FirstOrDefault()?.Position;
         }
 
         private static int GetNumberOfMovementToReachPosition(Position currentPosition, Position expectedPosition)
         {
-            return Math.Abs(expectedPosition.X - currentPosition.X) + 
+            return Math.Abs(expectedPosition.X - currentPosition.X) +
                    Math.Abs(expectedPosition.Y - currentPosition.Y);
         }
 
-        public bool IsNearByThor(Position giantPosition)
+        public bool IsBeside(Position currentPosition, Position expectedPosition)
         {
-            var currentThorPosition = CurrentThorPosition();
-            const int numberOfMovement = 2;
-            return GetNumberOfMovementToReachPosition(currentThorPosition, giantPosition).Equals(numberOfMovement)
-                   || IsInDiagonalPosition(currentThorPosition, giantPosition); 
+            const int numberOfMovement = 1;
+            return GetNumberOfMovementToReachPosition(currentPosition, expectedPosition).Equals(numberOfMovement)
+                   || IsInDiagonalPosition(currentPosition, expectedPosition, numberOfMovement);
         }
 
-        private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition)
+        private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition, int distance)
         {
             var numberOfMovementByX = Math.Abs(currentPosition.X - expectedPosition.X);
             var numberOfMovementByY = Math.Abs(currentPosition.Y - expectedPosition.Y);
-            const int numberOfMovement = 2;
-            return numberOfMovementByX.Equals(numberOfMovement) && numberOfMovementByY.Equals(numberOfMovement);
+            return numberOfMovementByX.Equals(distance) && numberOfMovementByY.Equals(distance);
+        }
+
+        public List<Position> GetGiantPositions()
+        {
+            var inputs = Console.ReadLine()?.Split(' ');
+            if (inputs == null) throw new ApplicationException("No input for giants");
+            var giants = new List<Position>();
+            var h = int.Parse(inputs[0]); // the remaining number of hammer strikes.
+            var n = int.Parse(inputs[1]); // the number of giants which are still present on the map.
+            for (var i = 0; i < n; i++)
+            {
+                inputs = Console.ReadLine()?.Split(' ');
+                if (inputs == null) continue;
+                giants.Add(new Position
+                {
+                    X = int.Parse(inputs[0]),
+                    Y = int.Parse(inputs[1])
+                });
+            }
+
+            return giants;
+        }
+
+        public Position GetThorPosition()
+        {
+            var inputs = Console.ReadLine()?.Split(' ');
+            if (inputs == null) throw new ApplicationException("No input for thor position");
+            return new Position
+            {
+                X = int.Parse(inputs[0]),
+                Y = int.Parse(inputs[1])
+            };
         }
     }
 
-    public class Position 
+    public class Position
     {
         public int X { get; set; }
         public int Y { get; set; }
