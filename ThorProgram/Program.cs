@@ -200,7 +200,8 @@ namespace ThorProgram
         {
             var numberOfMovementByX = Math.Abs(currentPosition.X - expectedPosition.X);
             var numberOfMovementByY = Math.Abs(currentPosition.Y - expectedPosition.Y);
-            return numberOfMovementByX.Equals(1) && numberOfMovementByY.Equals(1);
+            const int numberOfMovement = 1;
+            return numberOfMovementByX.Equals(numberOfMovement) && numberOfMovementByY.Equals(numberOfMovement);
         }
     }
 
