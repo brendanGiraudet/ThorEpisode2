@@ -102,8 +102,7 @@ namespace ThorProgram.Tests
             var giantPosition = new Position
             {
                 X = giantPositionByX,
-                Y = giantPositionByY,
-                Content = ContentPosition.Giant
+                Y = giantPositionByY
             };
             const string rightDirection = "SE";
 

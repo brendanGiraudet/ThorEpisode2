@@ -27,29 +27,36 @@ namespace ThorProgram
                 giants.ForEach(Console.Error.WriteLine);
 
                 var giant = game.FindTheNearestPosition(thorPosition, giants);
+                string action;
+                Console.Error.WriteLine("Thor: " + thorPosition);
+                Console.Error.WriteLine("Selected Giant : " + giant);
                 if (giant == null)
                 {
-                    Console.WriteLine(wait);
-                    return;
+                    action = wait;
                 }
-
-                Console.Error.WriteLine(thorPosition);
-                if (game.IsBeside(thorPosition, giant))
+                else
                 {
-                    Console.WriteLine(strike);
-                    giant.Content = ContentPosition.Empty;
-                    return;
+                    var predictedGiantPosition = giant;
+                    var direction = game.GetDirectionWhereMoveTo(predictedGiantPosition, thorPosition);
+                    game.MoveTo(direction, predictedGiantPosition);
+                    if (game.IsBeside(thorPosition, giant))
+                    {
+                        action = strike;
+                    }
+                    else
+                    {
+                        action = game.GetDirectionWhereMoveTo(thorPosition,giant);
+                        game.MoveTo(action, thorPosition);
+                    }    
                 }
-
-                var direction = game.GetDirectionWhereMoveTo(thorPosition,giant);
-                Console.WriteLine(direction);
+                
+                Console.WriteLine(action);
             }
         }
     }
 
     public class Game
     {
-        public List<Position> Map { get; private set; }
         private readonly int _heightMap;
         private readonly int _weightMap;
 
@@ -57,29 +64,6 @@ namespace ThorProgram
         {
             _heightMap = height;
             _weightMap = weight;
-            InitTheMap();
-        }
-
-        private void InitTheMap()
-        {
-            Map = new List<Position>();
-            for (var i = 0; i < _heightMap; i++)
-            {
-                for (var j = 0; j < _weightMap; j++)
-                {
-                    Map.Add(new Position
-                    {
-                        X = j,
-                        Y = i
-                    });
-                }
-            }
-        }
-
-        public void SetContentPosition(int x, int y, ContentPosition content)
-        {
-            var position = Map.Find(location => location.X.Equals(x) && location.Y.Equals(y));
-            position.Content = content;
         }
 
         public string GetDirectionWhereMoveTo(Position currentPosition, Position targetPosition)
@@ -92,43 +76,23 @@ namespace ThorProgram
 
             if (targetPositionByY < currentPositionByY)
             {
-                currentPosition.Y--;
                 direction = "N";
             }
             if (targetPositionByY > currentPositionByY)
             {
-                currentPosition.Y++;
                 direction = "S";
             }
             if (targetPositionByX < currentPositionByX)
             {
-                currentPosition.X--;
                 direction += "W";
             }
 
             if (targetPositionByX > currentPositionByX)
             {
-                currentPosition.X++;
                 direction += "E";
             }
 
             return direction;
-        }
-
-        private Position GetPosition(int positionByX, int positionByY)
-        {
-            return Map.Find(position => position.X.Equals(positionByX)
-                                        && position.Y.Equals(positionByY));
-        }
-
-        public Position CurrentThorPosition()
-        {
-            return Map.Find(position => position.Content.Equals(ContentPosition.Thor));
-        }
-
-        public void DisplayMap()
-        {
-            Map.ForEach(position => { Console.Error.WriteLine(position); });
         }
 
         public Position FindTheNearestPosition(Position currentPosition, List<Position> positions)
@@ -154,15 +118,17 @@ namespace ThorProgram
         public bool IsBeside(Position currentPosition, Position expectedPosition)
         {
             const int numberOfMovement = 1;
+            const int numberOfMovementForDiagonals = 2;
             return GetNumberOfMovementToReachPosition(currentPosition, expectedPosition).Equals(numberOfMovement)
-                   || IsInDiagonalPosition(currentPosition, expectedPosition, numberOfMovement);
+                   || IsInDiagonalPosition(currentPosition, expectedPosition, numberOfMovementForDiagonals);
         }
 
-        private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition, int distance)
+        private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition, int numberOfMovementForDiagonals)
         {
             var numberOfMovementByX = Math.Abs(currentPosition.X - expectedPosition.X);
             var numberOfMovementByY = Math.Abs(currentPosition.Y - expectedPosition.Y);
-            return numberOfMovementByX.Equals(distance) && numberOfMovementByY.Equals(distance);
+            var numberOfMovement = numberOfMovementByX + numberOfMovementByY;
+            return numberOfMovement.Equals(numberOfMovementForDiagonals);
         }
 
         public List<Position> GetGiantPositions()
@@ -196,18 +162,35 @@ namespace ThorProgram
                 Y = int.Parse(inputs[1])
             };
         }
+
+        public void MoveTo(string direction, Position currentPosition)
+        {
+            if (direction.Contains("N"))
+            {
+                currentPosition.Y--;
+            }
+            if (direction.Contains("S"))
+            {
+                currentPosition.Y++;
+            }
+            if (direction.Contains("E"))
+            {
+                currentPosition.X++;
+            }if (direction.Contains("W"))
+            {
+                currentPosition.X--;
+            }
+        }
     }
 
     public class Position
     {
         public int X { get; set; }
         public int Y { get; set; }
-
-        public ContentPosition Content { get; set; }
-
+        
         public override string ToString()
         {
-            return $"X : {X}, Y : {Y}, Content : {Content}";
+            return $"X : {X}, Y : {Y}";
         }
 
         public override bool Equals(Object obj)
@@ -225,12 +208,5 @@ namespace ThorProgram
         {
             return X == other.X && Y == other.Y;
         }
-    }
-
-    public enum ContentPosition
-    {
-        Empty = 0,
-        Thor = 1,
-        Giant = 2,
     }
 }
