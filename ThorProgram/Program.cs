@@ -191,10 +191,9 @@ namespace ThorProgram
         public bool IsNearByThor(Position giantPosition)
         {
             var currentThorPosition = CurrentThorPosition();
-            if (GetNumberOfMovementToReachPosition(currentThorPosition, giantPosition).Equals(1))
-                return true;
-            
-            return IsInDiagonalPosition(currentThorPosition, giantPosition);
+            const int numberOfMovement = 1;
+            return GetNumberOfMovementToReachPosition(currentThorPosition, giantPosition).Equals(numberOfMovement)
+                   || IsInDiagonalPosition(currentThorPosition, giantPosition); 
         }
 
         private bool IsInDiagonalPosition(Position currentPosition, Position expectedPosition)
