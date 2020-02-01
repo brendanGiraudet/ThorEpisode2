@@ -47,6 +47,7 @@ namespace ThorProgram
 
                 game.DisplayMap();
                 var giant = game.FindTheNearestGiant();
+                Console.Error.WriteLine(giant);
                 if (giant == null)
                 {
                     Console.WriteLine(wait);
@@ -56,6 +57,7 @@ namespace ThorProgram
                 if (game.IsNearByThor(giant))
                 {
                     Console.WriteLine(strike);
+                    giant.Content = ContentPosition.Empty;
                     return;
                 }
 
@@ -152,12 +154,10 @@ namespace ThorProgram
 
         public void DisplayMap()
         {
-            for (var i = 0; i < _heightMap; i++)
+            Map.ForEach(position =>
             {
-                var row = Map.Where(position => position.Y.Equals(i)).OrderBy(p => p.X).ToList();
-                row.ForEach(Console.Error.WriteLine);
-                Console.Error.WriteLine("\n");
-            }
+                Console.Error.WriteLine(position);
+            });
         }
 
         public Position FindTheNearestGiant()
