@@ -170,6 +170,11 @@ namespace ThorProgram
                 currentPosition.X--;
             }
         }
+
+        public Position FindTheRightPosition(Position thorPosition, List<Position> giants, int numberOfStrike)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Position

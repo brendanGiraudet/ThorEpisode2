@@ -110,5 +110,41 @@ namespace ThorProgram.Tests
             // Assert
             Check.That(direction).IsEqualTo(rightDirection);
         }
+
+        [Test]
+        public void ShouldFindTheRightPositionToKillGiantInMinimumStrike()
+        {
+            // Arrange
+            var thorPosition = new Position
+            {
+                X = 3,
+                Y = 3
+            };
+            var giants = new List<Position>
+            {
+                new Position
+                {
+                    X = 2,
+                    Y = 4,
+                },
+                new Position
+                {
+                    X = 5,
+                    Y = 2
+                }
+            };
+            var numberOfStrike = 1;
+            var expectedPosition = new Position
+            {
+                X = 3,
+                Y = 2
+            };
+
+            // Act
+            var rightPosition = _game.FindTheRightPosition(thorPosition, giants, numberOfStrike);
+
+            // Assert
+            Check.That(rightPosition).IsEqualTo(expectedPosition);
+        }
     }
 }
