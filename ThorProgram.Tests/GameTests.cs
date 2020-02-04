@@ -7,13 +7,11 @@ namespace ThorProgram.Tests
     public class GameTests
     {
         private Game _game;
-        private const int HeightMap = 18;
-        private const int WeightMap = 40;
 
         [SetUp]
         public void Setup()
         {
-            _game = new Game(HeightMap, WeightMap);
+            _game = new Game();
         }
 
         [Test]
