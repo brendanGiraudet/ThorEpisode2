@@ -15,9 +15,7 @@ namespace ThorProgram
             const string strike = "STRIKE";
             const string wait = "WAIT";
 
-            const int height = 18;
-            const int weight = 40;
-            var game = new Game(height, weight);
+            var game = new Game();
             var thorPosition = game.GetThorPosition();
 
             // game loop
@@ -57,15 +55,6 @@ namespace ThorProgram
 
     public class Game
     {
-        private readonly int _heightMap;
-        private readonly int _weightMap;
-
-        public Game(int height, int weight)
-        {
-            _heightMap = height;
-            _weightMap = weight;
-        }
-
         public string GetDirectionWhereMoveTo(Position currentPosition, Position targetPosition)
         {
             var direction = "";
